@@ -28,24 +28,4 @@ This was developed for exploring the Python GUI and to enhance my DSA skills.
 -   tkinter
 -   window
 
-## Demo
-
- - This is how the text-editor looks like. You can write, edit and delete content in your file.
-
-![enter image description here](https://github.com/iampiyushjain/Text-Editor/blob/main/screenshots/file.gif)
-
- - This is the dark mode which helps you to write in low light.
-
-![enter image description here](https://github.com/iampiyushjain/Text-Editor/blob/main/screenshots/dark_mode.gif)
-
- - The best feature of the application is Unlimited Undo/Redo operations. 
-
-![enter image description here](https://github.com/iampiyushjain/Text-Editor/blob/main/screenshots/operation.gif)
-
-## Contributing
-
-Please see  [CONTRIBUTING.md](https://github.com/iampiyushjain/Text-Editor/blob/master/CONTRIBUTING.md)  for more details. Or feel free to reach out to me via  [mail](mailto:piyushjain7024@gmail.com)
-
-## [](https://github.com/iampiyushjain/Text-Editor/blob/master/README.md#license)License
-
 Text Editor is licensed under MIT license. Please see  [LICENSE.md](https://github.com/iampiyushjain/Text-Editor/blob/master/LICENSE.md)  for more details.
