@@ -1,51 +1,61 @@
-# 📝 Text-Editor
-
+# 📝 Lyric-Editor
 
 ### Table of Contents
 
-1.  [About](https://github.com/iampiyushjain/Text-Editor/blob/main/README.md#about)
-2.  [Technologies Used](https://github.com/iampiyushjain/Text-Editor/blob/main/README.md#technologies-used)
-3.  [Prerequisite](https://github.com/iampiyushjain/Text-Editor/blob/main/README.md#prerequisite)
-4.  [Demo](https://github.com/iampiyushjain/Text-Editor/blob/main/README.md#demo)
-5.  [Contributing](https://github.com/iampiyushjain/Text-Editor/blob/main/README.md#contributing)
-6.  [License](https://github.com/iampiyushjain/Text-Editor/blob/main/README.md#license)
+1. [About](#about)
+2. [Technologies Used](#technologies-used)
+3. [Prerequisites](#prerequisites)
+4. [Demo](#demo)
+5. [Contributing](#contributing)
+6. [License](#license)
 
 ## About
 
-This is a simple text editing application in Python, which supports the basic text operations like Cut, Copy, Paste, Undo, Redo, and also basic file operations like New, Save, and Open. It has some great features like Unlimited Undo and Redo Operations, Night-mode. 
+This is a Python-based text editing application built using `tkinter`. It supports basic text operations such as Cut, Copy, Paste, Undo, Redo, and file operations like New, Save, and Open. Additional features include:
 
-This was developed for exploring the Python GUI and to enhance my DSA skills.
+- **Unlimited Undo and Redo**: Keep undoing and redoing your changes without limits.
+- **Night Mode**: A dark mode to reduce eye strain in low-light environments.
+- **Rhyme Suggestions**: For selected or recently typed words, the editor suggests rhymes, making it suitable for lyric or poetry writing.
+
+This project was developed to explore Python GUI capabilities and enhance my skills in Data Structures and Algorithms (DSA).
 
 ## Technologies Used
 
--   Python
--   Tkinter( Python GUI toolkit)
+- Python
+- `tkinter` (Python GUI toolkit)
+- `nltk` (for natural language processing tasks)
+- `pronouncing` (for rhyme suggestions)
 
-## Prerequisite
+## Prerequisites
 
--   Python3
--   Pip3
--   tkinter
--   window
+- Python 3
+- Pip 3
+- `tkinter` library
+- `nltk` and `pronouncing` Python libraries
 
 ## Demo
 
- - This is how the text-editor looks like. You can write, edit and delete content in your file.
+- **Basic Text Editing**: Write, edit, and delete content in your file with ease.
 
-![enter image description here](https://github.com/iampiyushjain/Text-Editor/blob/main/screenshots/file.gif)
+  ![Text Editor Example](https://github.com/p-cottrell/lyric_editor/blob/main/screenshots/editor.gif)
 
- - This is the dark mode which helps you to write in low light.
+- **Dark Mode**: Switch to night mode to reduce glare and improve visibility in low-light conditions.
 
-![enter image description here](https://github.com/iampiyushjain/Text-Editor/blob/main/screenshots/dark_mode.gif)
+  ![Dark Mode](https://github.com/p-cottrell/lyric_editor/blob/main/screenshots/dark_mode.gif)
 
- - The best feature of the application is Unlimited Undo/Redo operations. 
+- **Unlimited Undo/Redo Operations**: Effortlessly revert or reapply your changes.
 
-![enter image description here](https://github.com/iampiyushjain/Text-Editor/blob/main/screenshots/operation.gif)
+  ![Undo/Redo Operations](https://github.com/p-cottrell/lyric_editor/blob/main/screenshots/undo_redo.gif)
+
+- **Rhyme Suggestions**: Real-time suggestions for rhymes based on the word you type.
+
+  ![Rhyme Suggestions](https://github.com/p-cottrell/lyric_editor/blob/main/screenshots/rhyme_suggestions.gif)
 
 ## Contributing
 
-Please see  [CONTRIBUTING.md](https://github.com/iampiyushjain/Text-Editor/blob/master/CONTRIBUTING.md)  for more details. Or feel free to reach out to me via  [mail](mailto:piyushjain7024@gmail.com)
+If you'd like to contribute, please see [CONTRIBUTING.md](https://github.com/p-cottrell/lyric_editor/blob/master/CONTRIBUTING.md) for more details. Feel free to reach out via [email](mailto:p.cottrell@example.com) if you have any questions or suggestions.
 
-## [](https://github.com/iampiyushjain/Text-Editor/blob/master/README.md#license)License
+## License
 
-Text Editor is licensed under MIT license. Please see  [LICENSE.md](https://github.com/iampiyushjain/Text-Editor/blob/master/LICENSE.md)  for more details.
+Text Editor is licensed under the MIT license. Please see [LICENSE.md](https://github.com/p-cottrell/lyric_editor/blob/master/LICENSE.md) for more details.
+
