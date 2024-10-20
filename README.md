@@ -53,7 +53,7 @@ This project was developed to explore Python GUI capabilities and enhance my ski
 
 ## Contributing
 
-If you'd like to contribute, please see [CONTRIBUTING.md](https://github.com/p-cottrell/lyric_editor/blob/master/CONTRIBUTING.md) for more details. Feel free to reach out via [email](mailto:p.cottrell@example.com) if you have any questions or suggestions.
+If you'd like to contribute, please see [CONTRIBUTING.md](https://github.com/p-cottrell/lyric_editor/blob/master/CONTRIBUTING.md) for more details. Feel free to reach out via [email](mailto:p.cottrell@egmail.com) if you have any questions or suggestions.
 
 ## License
 
