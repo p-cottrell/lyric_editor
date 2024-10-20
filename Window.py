@@ -1,5 +1,6 @@
 import pronouncing
 import threading
+import os
 from nltk.corpus import words, brown
 from collections import defaultdict, Counter
 from tkinter import *
@@ -23,7 +24,12 @@ class Window:
         # Setting up the main application window
         self.window = Tk()
         self.window.geometry("1200x700+200+150")  # Window size and position
-        self.window.wm_title("Untitled")  # Default window title
+        img = PhotoImage(file='./writing.png')  # Set the window icon
+        self.window.iconphoto(False, img)
+        self.app_name = "Lyric Editor"  # Application name for the title
+        self.File = "Untitled"  # Default file name when no file is opened
+        # Set the initial window title
+        self.update_title(os.path.basename(self.File))
 
         # Initializing the main text widget for the text editor
         self.TextBox = Text(self.window, highlightthickness=0, font=("Helvetica", 14))
@@ -31,7 +37,7 @@ class Window:
         # Creating the menu bar and configuring various menus (File, Edit, View, Help)
         self.menuBar = Menu(self.window, bg="#eeeeee", font=("Helvetica", 13), borderwidth=0)
         self.window.config(menu=self.menuBar)
-        
+
         # File Menu: for file operations like New, Open, Save, and Exit
         self.fileMenu = Menu(self.menuBar, tearoff=0, activebackground="#d5d5e2", bg="#eeeeee", bd=2, font="Helvetica")
         self.fileMenu.add_command(label="    New       Ctrl+N", command=self.new_file)
@@ -56,11 +62,6 @@ class Window:
         self.viewMenu.add_command(label="   Change Mode   ", command=self.change_color)
         self.menuBar.add_cascade(label="   View   ", menu=self.viewMenu)
 
-        # Help Menu: for displaying information about the editor
-        self.helpMenu = Menu(self.menuBar, tearoff=0, activebackground="#d5d5e2", bg="#eeeeee", bd=2, font="Helvetica")
-        self.helpMenu.add_command(label="    About   ", command=self.about)
-        self.menuBar.add_cascade(label="   Help   ", menu=self.helpMenu)
-
         # Initializing undo and redo stacks to track text changes for undo/redo functionality
         self.UStack = Stack(self.TextBox.get("1.0", "end-1c"))
         self.RStack = Stack(self.TextBox.get("1.0", "end-1c"))
@@ -70,17 +71,33 @@ class Window:
         self.mainFrame.pack(fill=BOTH, expand=True)
 
         # Setting up the main text widget within the frame
-        self.TextBox = Text(self.mainFrame, highlightthickness=0, font=("Helvetica", 14), wrap=WORD)
-        self.TextBox.pack(side=LEFT, fill=BOTH, expand=True)
+        self.TextBox = Text(
+            self.mainFrame,
+            highlightthickness=0,
+            font=("Helvetica", 14),
+            wrap=WORD,
+            padx=10,  # Horizontal padding inside the TextBox
+            pady=10   # Vertical padding inside the TextBox
+        )
+        self.TextBox.pack(side=LEFT, fill=BOTH, expand=True, padx=20, pady=20)
 
         # Adding a side panel to display rhymes for the last word typed
-        self.rhymePanel = Text(self.mainFrame, width=30, state=DISABLED, wrap=WORD, bg="#f0f0f0")
-        self.rhymePanel.pack(side=RIGHT, fill=Y)
+        self.rhymePanel = Text(
+            self.mainFrame,
+            width=30,
+            state=DISABLED,
+            wrap=WORD,
+            padx=5,  # Horizontal padding inside the TextBox
+            pady=5   # Vertical padding inside the TextBox
+            )
+        self.rhymePanel.pack(side=RIGHT, fill=BOTH, expand=True, padx=20, pady=20)
 
         # Binding key events to detect when the user types a space, return, or punctuation, triggering rhyme lookup
         self.TextBox.bind("<space>", lambda event: self.update_rhyme_for_last_word())
         self.TextBox.bind("<Key-Return>", lambda event: self.update_rhyme_for_last_word())
         self.TextBox.bind("<Key-period>", lambda event: self.update_rhyme_for_last_word())
+        self.TextBox.bind("<Control-Key-L>", lambda event: self.update_rhyme_for_last_word_previous_line())
+        self.TextBox.bind("<Key-F4>", lambda event: self.update_rhyme_for_selected_word())
 
         # Caching common English words and word frequencies for performance optimization in rhyme lookup
         self.common_words = set(words.words())
@@ -88,37 +105,41 @@ class Window:
 
     # Method to create a new file; resets the editor state
     def new_file(self):
-        # Ensure the editor is in an editable state
-        self.TextBox.config(state=NORMAL)
-        if self.isFileOpen:
-            if len(self.File) > 0:
-                if self.isFileChange:
-                    self.save_file(self.File)  # Save changes before creating a new file
-                self.window.wm_title("Untitled")
-                self.TextBox.delete('1.0', END)  # Clear the text area
-                self.File = ''
-            else:
-                if self.isFileChange:
-                    result = message.askquestion('Window Title', 'Do You Want to Save Changes')
-                    self.save_new_file(result)
-                self.window.wm_title("Untitled")
-                self.TextBox.delete('1.0', END)
-        else:
-            self.isFileOpen = True
-            self.window.wm_title("Untitled")
+        # Check if there are unsaved changes before creating a new file
+        if self.isFileChange:
+            result = message.askquestion('Save Changes', 'Do you want to save changes before creating a new file?')
+            if result == "yes":
+                self.save_file()  # Save the current file
 
-        self.isFileChange = False  # Reset the file change flag
+        # Clear the text area and reset the editor state
+        self.TextBox.config(state=NORMAL)  # Ensure the editor is editable
+        self.TextBox.delete('1.0', END)  # Clear all text in the editor
 
-        # Reset undo stack to reflect the new state
-        if self.UStack.size() > 0:
-            self.UStack.clear_stack()
-            self.UStack.add(self.TextBox.get("1.0", "end-1c"))
+        # Reset file information
+        self.File = "Untitled"
+        self.isFileOpen = True
+        self.isFileChange = False  # Reset the change flag as there's no unsaved change now
+
+        # Update the window title to reflect the new state
+        self.update_title(self.File)
+
+        # Reset the undo stack to start from the new blank state
+        self.UStack.clear_stack()
+        self.UStack.add(self.TextBox.get("1.0", "end-1c"))
+
+    # Method to update the window title with the current filename
+    def update_title(self, filename):
+        # Update the window title to display the application name and current filename
+        self.window.wm_title(f"{self.app_name} - {filename}")
 
     # Method to open an existing file and load its contents into the editor
     def open_file(self):
         self.TextBox.config(state=NORMAL)
         if self.isFileOpen and self.isFileChange:
-            self.save_file(self.File)  # Save changes before opening a new file
+            result = message.askquestion('Save Changes', 'Do you want to save changes before opening a new file?')
+            if result == "yes":
+                self.save_file()
+
         filename = fd.askopenfilename(filetypes=self.fileTypes, defaultextension=".txt")
         if len(filename) != 0:
             self.isFileChange = False
@@ -126,9 +147,9 @@ class Window:
                 text = outfile.read()
                 self.TextBox.delete('1.0', END)
                 self.TextBox.insert(END, text)
-                self.window.wm_title(filename)
                 self.isFileOpen = True
                 self.File = filename
+                self.update_title(os.path.basename(self.File))
 
         # Update the undo stack with the new file's content
         if self.UStack.size() > 0:
@@ -136,42 +157,36 @@ class Window:
             self.UStack.add(self.TextBox.get("1.0", "end-1c"))
 
     # Method to save the currently open file or prompt to save as a new file if necessary
-    def save_file(self, file):
-        result = message.askquestion('Window Title', 'Do You Want to Save Changes')
-        if result == "yes":
-            if len(file) == 0:
-                saveFile = fd.asksaveasfile(filetypes=self.fileTypes, defaultextension=".txt")
-                if saveFile:
-                    self.write_file(saveFile.name)
-                    self.TextBox.delete('1.0', END)
-            else:
-                self.write_file(file)
-
-    # Method to handle saving a new file when prompted
-    def save_new_file(self, result):
-        self.isFileChange = False
-        if result == "yes":
-            saveFile = fd.asksaveasfile(filetypes=self.fileTypes, defaultextension=".txt")
+    def save_file(self):
+        # Check if the file is "Untitled" (meaning it's a new file that hasn't been saved before)
+        if self.File == "Untitled" or not self.File:
+            # Prompt the user to select a location and filename for saving the file
+            saveFile = fd.asksaveasfilename(filetypes=self.fileTypes, defaultextension=".txt")
             if saveFile:
-                self.write_file(saveFile.name)
-                self.File = saveFile.name
+                # Update the file name and write the file content
+                self.File = saveFile
+                self.write_file(self.File)  # Save the file content
+                self.update_title(os.path.basename(self.File))  # Update the window title
         else:
-            self.TextBox.delete('1.0', END)
+            # If the file has already been saved before, simply overwrite the existing file
+            self.write_file(self.File)
 
-    # Method to write data to a file
+    # Method to write the content to the specified file
     def write_file(self, file):
-        inputValue = self.TextBox.get("1.0", "end-1c")
+        inputValue = self.TextBox.get("1.0", "end-1c")  # Get all the text in the TextBox
         with open(file, "w") as outfile:
             outfile.write(inputValue)
+        self.isFileChange = False  # Reset the change flag after saving
 
     # Method to save the current file content if it is already open
     def retrieve_input(self):
-        if self.isFileOpen and len(self.File) != 0:
+        if self.isFileOpen and len(self.File) > 0 and self.File != "Untitled":
+            # Save to the existing file
             self.write_file(self.File)
             self.isFileChange = False
         else:
-            self.save_new_file("yes")
-            self.window.wm_title(self.File)
+            # Save as a new file
+            self.save_file()
             self.isFileOpen = True
 
     # Key press event handler for various shortcuts and typing actions
@@ -222,7 +237,9 @@ class Window:
     # Method to handle window close event safely
     def on_closing(self):
         if self.isFileOpen and self.isFileChange:
-            self.save_file(self.File)
+            result = message.askquestion('Save Changes', 'Do you want to save changes before closing?')
+            if result == "yes":
+                self.save_file()
         self._quit()
 
     # Method to quit the application and destroy the window
@@ -232,19 +249,39 @@ class Window:
 
     # Method to toggle between normal and dark modes
     def change_color(self):
+    # Toggle between 'light' and 'dark' modes
         if self.mode == "normal":
             self.mode = "dark"
-            self.TextBox.configure(background="#2f2b2b", foreground="#BDBDBD", font=("Helvetica", 14), insertbackground="white")
+            # Apply dark theme settings
+            self.TextBox.configure(
+                background="#1e1e1e",   # Dark gray background
+                foreground="#dcdcdc",   # Light gray text
+                insertbackground="#dcdcdc"  # Light gray cursor
+            )
+            self.rhymePanel.configure(
+                background="#1e1e1e",   # Match rhyme panel background to TextBox
+                foreground="#dcdcdc"    # Match text color
+            )
+            self.mainFrame.configure(background="#2e2e2e")  # Darker frame background
+            self.window.configure(background="#2e2e2e")  # Darker window background
+
+            # Note: Menu colors are set by the OS and may not be customizable in tkinter.
+            # If you want to style menus, consider using ttk or a custom menu implementation.
         else:
             self.mode = "normal"
-            self.TextBox.configure(background="white", foreground="black", font=("Helvetica", 14), insertbackground="black")
+            # Apply light theme settings
+            self.TextBox.configure(
+                background="#ffffff",   # White background
+                foreground="#000000",   # Black text
+                insertbackground="#000000"  # Black cursor
+            )
+            self.rhymePanel.configure(
+                background="#f0f0f0",   # Light gray background
+                foreground="#000000"    # Black text
+            )
+            self.mainFrame.configure(background="#ffffff")  # Light frame background
+            self.window.configure(background="#ffffff")  # Light window background
 
-    # Method to show information about the editor
-    def about(self):
-        with open("About.txt", "r") as outfile:
-            text = outfile.read()
-            self.TextBox.insert(END, text)
-            self.TextBox.config(state=DISABLED)
 
     # Method to copy selected text to the clipboard
     def copy(self):
@@ -271,6 +308,34 @@ class Window:
         if words:
             last_word = words[-1]
             self.suggest_rhymes_threaded(last_word)
+
+    def update_rhyme_for_selected_word(self):
+        try:
+            # Get the selected text from the TextBox
+            selected_word = self.TextBox.get("sel.first", "sel.last").strip()
+            # Ensure there's a selection and it's not just whitespace
+            if selected_word:
+                self.suggest_rhymes_threaded(selected_word)
+        except TclError:
+            # If no text is selected, do nothing (TclError is raised when there's no selection)
+            pass
+
+    def update_rhyme_for_last_word_previous_line(self):
+        # Get the current cursor position in the TextBox
+        cursor_index = self.TextBox.index(INSERT)
+        # Extract the line number from the cursor position
+        current_line_number = int(cursor_index.split('.')[0])
+
+        # If the current line is greater than 1 (to ensure there's a previous line)
+        if current_line_number > 1:
+            # Get the content of the previous line
+            previous_line_content = self.TextBox.get(f"{current_line_number - 1}.0", f"{current_line_number - 1}.end").strip()
+
+            # Split the previous line into words and get the last word if it exists
+            words = previous_line_content.split()
+            if words:
+                last_word = words[-1]
+                self.suggest_rhymes_threaded(last_word)
 
     # Method to run rhyme suggestion in a separate thread for non-blocking UI updates
     def suggest_rhymes_threaded(self, word):

@@ -1,19 +1,19 @@
-﻿ Hi,
+﻿Hi,
 
- This Text Editor is developed by using Python and Python modules like tkinter and Window. The Following are the functionality of the text editor.
+This text editor is developed using Python, incorporating modules such as tkinter and custom components like Window. The following are the key features of the text editor:
 
-        * It supports the basic text operations like Cut, Copy, Paste, Undo, Redo, and also basic file operations like New, Save, and Open.
-        * It has Night-mode feature to work in low light.
-        * It has the power of unlimited Undo and Redo operations.
-        * It supports almost all types of files.
+    Basic Text Operations: Supports essential text functions like Cut, Copy, Paste, Undo, and Redo, along with basic file operations such as New, Save, and Open.
+    Night Mode: Includes a night mode feature for comfortable usage in low-light environments.
+    Unlimited Undo/Redo: Offers unlimited undo and redo operations, allowing for complete flexibility when editing.
+    File Compatibility: Supports a wide variety of file types, including Python files (.py) and text documents (.txt).
 
- You can perform the following operations:
+Keyboard Shortcuts:
 
-        * New File - Ctrl+N
-        * Open File - Ctrl+O
-        * Save File - Ctrl+S
-        * Undo - Ctrl+Z
-        * Redo - Ctrl+Shift+Z
-        * Exit - Ctrl+X
+    New File: Ctrl + N
+    Open File: Ctrl + O
+    Save File: Ctrl + S
+    Undo: Ctrl + Z
+    Redo: Ctrl + Shift + Z
+    Exit: Ctrl + X
 
- For any queries feedback you can write me at [pauljamescottrell]@gmail.com .....
+For any queries or feedback, feel free to contact me at pauljamescottrell@gmail.com.
