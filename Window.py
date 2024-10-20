@@ -84,20 +84,22 @@ class Window:
         # Adding a side panel to display rhymes for the last word typed
         self.rhymePanel = Text(
             self.mainFrame,
-            width=30,
+            width=40,
             state=DISABLED,
             wrap=WORD,
             padx=5,  # Horizontal padding inside the TextBox
             pady=5   # Vertical padding inside the TextBox
             )
         self.rhymePanel.pack(side=RIGHT, fill=BOTH, expand=True, padx=20, pady=20)
+        self.rhymePanel.tag_configure("bold", font=("Helvetica", 14, "bold"))
+        self.rhymePanel.config(state=DISABLED)
 
         # Binding key events to detect when the user types a space, return, or punctuation, triggering rhyme lookup
         self.TextBox.bind("<space>", lambda event: self.update_rhyme_for_last_word())
         self.TextBox.bind("<Key-Return>", lambda event: self.update_rhyme_for_last_word())
         self.TextBox.bind("<Key-period>", lambda event: self.update_rhyme_for_last_word())
-        self.TextBox.bind("<Control-Key-L>", lambda event: self.update_rhyme_for_last_word_previous_line())
-        self.TextBox.bind("<Key-F4>", lambda event: self.update_rhyme_for_selected_word())
+        self.TextBox.bind("<Key-F4>", lambda event: self.update_rhyme_for_last_word_previous_line())
+        self.TextBox.bind("<<Selection>>", lambda event: self.update_rhyme_for_selected_word())
 
         # Caching common English words and word frequencies for performance optimization in rhyme lookup
         self.common_words = set(words.words())
@@ -342,9 +344,54 @@ class Window:
         thread = threading.Thread(target=self.suggest_rhymes, args=(word,))
         thread.start()
 
+    def get_near_rhymes(self, word):
+        # Get the phonetic representation of the given word
+        target_phones = pronouncing.phones_for_word(word)
+        if not target_phones:
+            return []  # Return empty if no phonetic data is found for the word
+
+        target_phones = target_phones[0]  # Use the first pronunciation if there are multiple
+        target_phones_split = target_phones.split()
+
+        # Get all words in the pronouncing dictionary
+        all_words = pronouncing.lookup.keys()
+        near_rhymes = []
+
+        for other_word in all_words:
+            if other_word == word:
+                continue
+
+            # Get phones for the other word
+            other_phones = pronouncing.phones_for_word(other_word)
+            if not other_phones:
+                continue
+
+            other_phones_split = other_phones[0].split()  # Take the first pronunciation and split it
+
+            # Define how many phonemes should match for near rhyme (you can adjust this threshold)
+            match_length = min(2, len(target_phones_split), len(other_phones_split))
+
+            # Check if the last few phonemes match for near rhyme
+            if target_phones_split[-match_length:] == other_phones_split[-match_length:] and other_word in self.common_words:
+                near_rhymes.append(other_word)
+
+        return near_rhymes
+
     # Method to find rhymes and update the side panel with results
     def suggest_rhymes(self, word):
         rhymes = pronouncing.rhymes(word)
+        near_rhymes = self.get_near_rhymes(word)
+
+        # Filter and organize exact rhymes by syllable count
+        rhyme_text = f"Rhymes for '{word}':\n"
+        self.rhymePanel.config(state=NORMAL)
+        self.rhymePanel.delete("1.0", END)  # Clear previous content
+
+        # Insert the heading for exact rhymes
+        self.rhymePanel.insert(END, rhyme_text)
+
+        exact_rhymes_set = set()  # Track exact rhymes to exclude them from near rhymes
+
         if rhymes:
             filtered_rhymes = [rhyme for rhyme in rhymes if rhyme in self.common_words]
             rhymes_by_syllable = defaultdict(list)
@@ -353,17 +400,33 @@ class Window:
                 if phones:
                     syllable_count = pronouncing.syllable_count(phones[0])
                     rhymes_by_syllable[syllable_count].append((rhyme, self.word_freq[rhyme]))
+                    exact_rhymes_set.add(rhyme)  # Add to the set of exact rhymes
 
-            rhyme_text = f"Rhymes for '{word}':\n"
             for syllable_count in sorted(rhymes_by_syllable):
-                sorted_rhymes = sorted(rhymes_by_syllable[syllable_count], key=lambda x: x[1], reverse=True)
-                rhyme_text += f"\n{syllable_count} Syllable{'s' if syllable_count > 1 else ''}:\n"
-                rhyme_text += ", ".join([rhyme[0] for rhyme in sorted_rhymes])
-        else:
-            rhyme_text = f"No English rhymes found for '{word}'."
+                # Insert the syllable count with bold formatting
+                syllable_text = f"{syllable_count} Syllable{'s' if syllable_count > 1 else ''}:\n"
+                self.rhymePanel.insert(END, syllable_text, "bold")
 
-        # Update the rhymePanel using tkinter's `after` method to ensure thread-safe access
-        self.window.after(0, self.update_rhyme_panel, rhyme_text)
+                sorted_rhymes = sorted(rhymes_by_syllable[syllable_count], key=lambda x: x[1], reverse=True)
+                rhyme_list = ", ".join([rhyme[0] for rhyme in sorted_rhymes]) + "\n"
+                self.rhymePanel.insert(END, rhyme_list)
+        else:
+            self.rhymePanel.insert(END, "No exact rhymes found.\n")
+
+        # Filter near rhymes to exclude any that are already exact rhymes
+        filtered_near_rhymes = [near_rhyme for near_rhyme in near_rhymes if near_rhyme not in exact_rhymes_set]
+
+        # Add near rhymes below the exact rhymes
+        near_rhyme_text = f"\nNear Rhymes:\n"
+        self.rhymePanel.insert(END, near_rhyme_text, "bold")
+
+        # Insert the near rhymes
+        if filtered_near_rhymes:
+            self.rhymePanel.insert(END, ", ".join(filtered_near_rhymes) + "\n")
+        else:
+            self.rhymePanel.insert(END, "No near rhymes found.\n")
+
+        self.rhymePanel.config(state=DISABLED)
 
     # Method to update the rhyme panel safely from another thread
     def update_rhyme_panel(self, rhyme_text):
