@@ -17,7 +17,7 @@ This is a Python-based text editing application built using `tkinter` that offer
 - **Night Mode**: A dark mode to reduce eye strain in low-light environments.
 - **Rhyme Suggestions**: For selected or recently typed words, the editor suggests rhymes, making it suitable for lyric or poetry writing.
 
-This project was developed to explore Python GUI capabilities and enhance my skills in Data Structures and Algorithms (DSA).
+This project was developed to explore Python GUI capabilities and enhance my skills in Data Structures and Algorithms.
 
 ## Technologies Used
 
