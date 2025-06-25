@@ -11,7 +11,7 @@
 
 ## About
 
-This is a Python-based text editing application built using `tkinter`. It supports basic text operations such as Cut, Copy, Paste, Undo, Redo, and file operations like New, Save, and Open. Additional features include:
+This is a Python-based text editing application built using `tkinter` that offers rhymes for selected words. It's goal was is to cut out the middle man of going to rhymezone every 4 minutes. It supports basic text operations such as Cut, Copy, Paste, Undo, Redo, and file operations like New, Save, and Open. Additional features include:
 
 - **Unlimited Undo and Redo**: Keep undoing and redoing your changes without limits.
 - **Night Mode**: A dark mode to reduce eye strain in low-light environments.
