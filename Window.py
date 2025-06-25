@@ -79,7 +79,7 @@ class Window:
             padx=10,  # Horizontal padding inside the TextBox
             pady=10   # Vertical padding inside the TextBox
         )
-        self.TextBox.pack(side=LEFT, fill=BOTH, expand=True, padx=20, pady=20)
+        self.TextBox.pack(side=LEFT, fill=BOTH, expand=True, padx=10, pady=20)
 
         # Adding a side panel to display rhymes for the last word typed
         self.rhymePanel = Text(
@@ -90,7 +90,7 @@ class Window:
             padx=5,  # Horizontal padding inside the TextBox
             pady=5   # Vertical padding inside the TextBox
             )
-        self.rhymePanel.pack(side=RIGHT, fill=BOTH, expand=True, padx=20, pady=20)
+        self.rhymePanel.pack(side=RIGHT, fill=BOTH, expand=True, padx=10, pady=20)
         self.rhymePanel.tag_configure("bold", font=("Helvetica", 14, "bold"))
         self.rhymePanel.config(state=DISABLED)
 
@@ -103,7 +103,7 @@ class Window:
 
         # Caching common English words and word frequencies for performance optimization in rhyme lookup
         self.common_words = set(words.words())
-        self.word_freq = Counter(brown.words())
+        self.word_freq = Counter(words.words())
 
     # Method to create a new file; resets the editor state
     def new_file(self):
@@ -369,7 +369,7 @@ class Window:
             other_phones_split = other_phones[0].split()  # Take the first pronunciation and split it
 
             # Define how many phonemes should match for near rhyme (you can adjust this threshold)
-            match_length = min(2, len(target_phones_split), len(other_phones_split))
+            match_length = min(3, len(target_phones_split), len(other_phones_split))
 
             # Check if the last few phonemes match for near rhyme
             if target_phones_split[-match_length:] == other_phones_split[-match_length:] and other_word in self.common_words:

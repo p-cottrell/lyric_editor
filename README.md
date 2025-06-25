@@ -37,19 +37,21 @@ This project was developed to explore Python GUI capabilities and enhance my ski
 
 - **Basic Text Editing**: Write, edit, and delete content in your file with ease.
 
-  ![Text Editor Example](https://github.com/p-cottrell/lyric_editor/blob/main/screenshots/editor.gif)
-
-- **Dark Mode**: Switch to night mode to reduce glare and improve visibility in low-light conditions.
-
-  ![Dark Mode](https://github.com/p-cottrell/lyric_editor/blob/main/screenshots/dark_mode.gif)
-
-- **Unlimited Undo/Redo Operations**: Effortlessly revert or reapply your changes.
-
-  ![Undo/Redo Operations](https://github.com/p-cottrell/lyric_editor/blob/main/screenshots/undo_redo.gif)
+  ![Text Editor Example](./gifs/editor_preview.gif)
 
 - **Rhyme Suggestions**: Real-time suggestions for rhymes based on the word you type.
 
-  ![Rhyme Suggestions](https://github.com/p-cottrell/lyric_editor/blob/main/screenshots/rhyme_suggestions.gif)
+  ![Rhyme Suggestions](./gifs/rhyme_preview.gif)
+
+- **Dark Mode**: Switch to night mode to reduce glare and improve visibility in low-light conditions.
+
+  ![Dark Mode](./gifs/darkmode_preview.gif)
+
+- **Unlimited Undo/Redo Operations**: Effortlessly revert or reapply your changes.
+
+  ![Undo/Redo Operations](./gifs/edit_preview.gif)
+
+
 
 ## Contributing
 
